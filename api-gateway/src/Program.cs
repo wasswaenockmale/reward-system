@@ -4,13 +4,13 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── YARP Reverse Proxy ────────────────────────────────────────────────────────
+// YARP Reverse Proxy
 // CONCEPT: YARP reads routes from appsettings.json (ReverseProxy section).
 // It forwards requests to downstream services — no custom controller code needed.
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
-// ── JWT Auth (gateway-level) ──────────────────────────────────────────────────
+// JWT Auth (gateway-level)
 // CONCEPT: The gateway validates JWT tokens BEFORE forwarding to services.
 // Individual services can also validate (defence in depth), but the gateway
 // is the main guard — it blocks unauthenticated requests early.
@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ── CORS (allow frontend / mobile apps to call the gateway) ───────────────────
+// CORS (allow frontend / mobile apps to call the gateway)
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
