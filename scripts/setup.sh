@@ -1,7 +1,6 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Reward System — Local Setup Script
-# Run this once to get everything started.
+# This script sets up the development environment for the Reward System.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -e  # Exit on any error
