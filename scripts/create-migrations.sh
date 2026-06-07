@@ -1,12 +1,7 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Run this script to create EF Core migrations for all services.
+# This script to creates EF Core migrations for all services.
 # Run from the root of the project: bash scripts/create-migrations.sh
-#
-# CONCEPT: EF Core migrations are C# files that describe database changes.
-# "dotnet ef migrations add" generates the migration.
-# "dotnet ef database update" applies it.
-# In this project, migrations are applied automatically on startup (db.Database.Migrate()).
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -e
