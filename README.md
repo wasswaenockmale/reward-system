@@ -72,7 +72,7 @@ docker compose up --build
 
 All databases are created automatically. All services start automatically.
 
-### Service URLs
+<!-- ### Service URLs
 
 | Service | URL | Purpose |
 |---------|-----|---------|
@@ -84,7 +84,7 @@ All databases are created automatically. All services start automatically.
 | Notification | http://localhost:5005/swagger | Event consumer |
 | **RabbitMQ UI** | http://localhost:15672 | guest / guest |
 
----
+--- -->
 
 <!-- ## Test the Full Flow (copy & paste)
 
