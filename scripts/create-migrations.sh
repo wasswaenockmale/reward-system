@@ -14,7 +14,7 @@ set -e
 echo "Creating EF Core migrations..."
 
 # Auth Service
-echo "► auth-service..."
+echo "auth-service..."
 cd services/auth-service
 dotnet ef migrations add InitialCreate \
   --project AuthService.csproj \
@@ -23,7 +23,7 @@ dotnet ef migrations add InitialCreate \
 cd ../..
 
 # User Service
-echo "► user-service..."
+echo "user-service..."
 cd services/user-service
 dotnet ef migrations add InitialCreate \
   --project UserService.csproj \
@@ -32,7 +32,7 @@ dotnet ef migrations add InitialCreate \
 cd ../..
 
 # Reward Service
-echo "► reward-service..."
+echo "reward-service..."
 cd services/reward-service
 dotnet ef migrations add InitialCreate \
   --project RewardService.csproj \
@@ -41,7 +41,7 @@ dotnet ef migrations add InitialCreate \
 cd ../..
 
 # Wallet Service
-echo "► wallet-service..."
+echo "wallet-service..."
 cd services/wallet-service
 dotnet ef migrations add InitialCreate \
   --project WalletService.csproj \
@@ -49,7 +49,7 @@ dotnet ef migrations add InitialCreate \
   --output-dir src/data/Migrations
 cd ../..
 
-echo "✅ All migrations created!"
+echo "All migrations created!"
 echo ""
 echo "NOTE: Migrations are applied automatically when each service starts."
 echo "You do NOT need to run 'dotnet ef database update' manually."
