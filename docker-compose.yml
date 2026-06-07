@@ -1,0 +1,193 @@
+version: "3.9"
+
+services:
+  # ─────────────────────────────────────────────
+  # INFRASTRUCTURE
+  # ─────────────────────────────────────────────
+  postgres-auth:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-auth:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-user:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata-user:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-reward:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rewarddb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata-reward:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-wallet:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: walletdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata-wallet:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # Management UI → http://localhost:15672 (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # SERVICES
+  # ─────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-auth;Database=authdb;Username=postgres;Password=postgres
+      - Jwt__Secret=super-secret-key-change-in-production-32chars
+      - Jwt__Issuer=reward-system
+      - Jwt__Audience=reward-system-clients
+      - Jwt__ExpiryMinutes=60
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-user;Database=userdb;Username=postgres;Password=postgres
+      - Jwt__Secret=super-secret-key-change-in-production-32chars
+      - Jwt__Issuer=reward-system
+      - Jwt__Audience=reward-system-clients
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+
+  reward-service:
+    build:
+      context: .
+      dockerfile: services/reward-service/Dockerfile
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-reward;Database=rewarddb;Username=postgres;Password=postgres
+      - Jwt__Secret=super-secret-key-change-in-production-32chars
+      - Jwt__Issuer=reward-system
+      - Jwt__Audience=reward-system-clients
+      - Services__UserService=http://user-service:8080
+      - Services__WalletService=http://wallet-service:8080
+      - RabbitMq__Host=rabbitmq
+    depends_on:
+      postgres-reward:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  wallet-service:
+    build:
+      context: .
+      dockerfile: services/wallet-service/Dockerfile
+    ports:
+      - "5004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-wallet;Database=walletdb;Username=postgres;Password=postgres
+      - Jwt__Secret=super-secret-key-change-in-production-32chars
+      - Jwt__Issuer=reward-system
+      - Jwt__Audience=reward-system-clients
+      - RabbitMq__Host=rabbitmq
+    depends_on:
+      postgres-wallet:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    ports:
+      - "5005:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMq__Host=rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"     # ← This is your single entry point
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Jwt__Secret=super-secret-key-change-in-production-32chars
+      - Jwt__Issuer=reward-system
+      - Jwt__Audience=reward-system-clients
+    depends_on:
+      - auth-service
+      - user-service
+      - reward-service
+      - wallet-service
+      - notification-service
+
+volumes:
+  pgdata-auth:
+  pgdata-user:
+  pgdata-reward:
+  pgdata-wallet:
