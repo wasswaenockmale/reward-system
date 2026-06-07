@@ -1,9 +1,9 @@
-# Reward Points System — Microservices in C# / .NET 8
+# Reward Points System — Microservices in C#
 
-A fully working reward points system built as microservices.
-Use this project to **learn C# backend concepts** hands-on.
+<!-- A fully working reward points system built as microservices.
+Use this project to **learn C# backend concepts** hands-on. -->
 
----
+<!-- --- -->
 
 ## Architecture Overview
 
@@ -47,7 +47,7 @@ Use this project to **learn C# backend concepts** hands-on.
 6. **Response** → returned to the user
 
 ---
-
+<!-- 
 ## Quick Start
 
 ### Prerequisites
@@ -55,7 +55,7 @@ Use this project to **learn C# backend concepts** hands-on.
 | Tool | Version | Install |
 |------|---------|---------|
 | Docker Desktop | Latest | https://www.docker.com/products/docker-desktop |
-| .NET SDK | 8.0+ | https://dotnet.microsoft.com/download |
+| .NET SDK | 8.0+ | https://dotnet.microsoft.com/download | -->
 
 ### Run the system
 
@@ -86,7 +86,7 @@ All databases are created automatically. All services start automatically.
 
 ---
 
-## Test the Full Flow (copy & paste)
+<!-- ## Test the Full Flow (copy & paste)
 
 ### Step 1 — Register a user
 ```bash
@@ -166,7 +166,7 @@ curl http://localhost:5000/api/rewards/transactions \
 docker compose logs -f notification-service
 ```
 
----
+--- -->
 
 ## Project Structure
 
@@ -275,20 +275,20 @@ docker compose exec reward-service sh
 
 ---
 
-## Security Notes (for learning)
+<!-- ## Security Notes (for learning)
 
 - JWT secret is hardcoded in docker-compose.yml — **never do this in production**
 - In production: use environment secrets, Azure Key Vault, or AWS Secrets Manager
 - The wallet credit endpoint (`POST /api/wallets/credit`) should be protected by
   an internal API key or network policy — not exposed via the gateway
-- Passwords are hashed with BCrypt (work factor 11) — this is production-safe
+- Passwords are hashed with BCrypt (work factor 11) — this is production-safe -->
 
 ---
 
-## Learning Resources
+<!-- ## Learning Resources
 
 1. **C# Basics** → Tim Corey on YouTube (free, .NET 8)
 2. **Microservices in .NET** → Nick Chapsas — ".NET Microservices" full course
 3. **Clean Architecture patterns** → Milan Jovanović on YouTube
 4. **EF Core** → https://learn.microsoft.com/ef/core/
-5. **MassTransit docs** → https://masstransit.io/documentation/
+5. **MassTransit docs** → https://masstransit.io/documentation/ -->
