@@ -8,18 +8,17 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Database ─────────────────────────────────────────────────────────────────
+// Database 
 // CONCEPT: EF Core DbContext registered with DI. Scoped lifetime = one per request.
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ── Services (Dependency Injection) ──────────────────────────────────────────
+// Services (Dependency Injection)
 // CONCEPT: We register the interface + its concrete implementation.
 // Controllers ask for ITokenService — DI provides TokenService automatically.
 builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// ── JWT Authentication ────────────────────────────────────────────────────────
 // CONCEPT: Middleware pipeline. AddAuthentication sets up the JWT validator.
 // Any controller with [Authorize] will require a valid Bearer token.
 var jwtSecret = builder.Configuration["Jwt:Secret"]
@@ -43,7 +42,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
-// ── Swagger / OpenAPI ─────────────────────────────────────────────────────────
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -70,7 +68,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ── Auto-migrate database on startup ─────────────────────────────────────────
+// Auto-migrate database on startup 
 // CONCEPT: In development, apply any pending EF Core migrations automatically.
 using (var scope = app.Services.CreateScope())
 {
